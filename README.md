@@ -27,7 +27,7 @@ cd task-api
 Install the dependencies:
 
 ```bash
-pip install -r requirements.txt
+pip install "fastapi[standard]"
 ```
 
 ## Run
@@ -35,7 +35,7 @@ pip install -r requirements.txt
 Start the API with:
 
 ```bash
-uvicorn main:app --reload --port 8000
+uvicorn main:app --reload --port 8000 or fastapi dev main.py
 ```
 
 The API will be available at:
@@ -68,6 +68,10 @@ Create a new task:
 
 ```bash
 curl -i -X POST http://localhost:8000/tasks -H "Content-Type: application/json" -d '{"title":"Buy milk"}'
+```
+or if you use command prompt
+```bash
+curl -i -X POST http://localhost:8000/tasks -H "Content-Type: application/json" -d "{\"title\":\"Buy milk\"}"
 ```
 
 Example response:
