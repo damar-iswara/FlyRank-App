@@ -163,7 +163,7 @@ with HTTP status:
 ```
 
 ## Database Testing
-
+<img width="1917" height="1016" alt="0  DB-Browser" src="https://github.com/user-attachments/assets/c8e16dd2-2abf-4ddd-95d5-66236f16700c" />
 The SQLite database can be opened using **DB Browser for SQLite**.
 
 Example SQL query executed during database testing:
@@ -171,15 +171,11 @@ Example SQL query executed during database testing:
 ```sql
 SELECT * FROM tasks WHERE done = 1;
 ```
+<img width="343" height="342" alt="2  list-tasks-done" src="https://github.com/user-attachments/assets/f1936447-ec8c-4025-81cb-64a8b8a04a55" />
 
 This query returns only the tasks that have been marked as completed.
 
 Changes made directly in DB Browser are immediately reflected by the API because both DB Browser and the FastAPI application read and modify the same `tasks.db` file.
-
-### DB Browser Screenshot
-
-![SQLite database opened in DB Browser]
-
 
 
 ## Swagger Documentation
