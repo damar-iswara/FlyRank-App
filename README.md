@@ -2,7 +2,7 @@
 
 A simple REST API built with **FastAPI** for managing tasks.
 
-The API uses an in-memory list as its database, so data is reset whenever the server restarts.
+The API uses **SQLite** as its database. Task data is stored in a local `tasks.db` file, so the data survives server restarts.
 
 ## Features
 
@@ -14,6 +14,43 @@ The API uses an in-memory list as its database, so data is reset whenever the se
 * Health check endpoint
 * Automatic Swagger API documentation
 * Input validation for new tasks
+* SQLite database with automatic table creation
+* Automatic seeding of three example tasks
+
+## Why SQLite?
+
+SQLite was chosen because it is simple and suitable for this project:
+
+* **Single file** — the entire database is stored in one `tasks.db` file.
+* **Zero setup** — SQLite is built into Python, so no separate database server is required.
+* **Survives restarts** — task data remains stored after the FastAPI server is stopped and restarted.
+* **Easy to share** — the database can be inspected directly using DB Browser for SQLite.
+
+## Database
+
+The application uses a SQLite database named:
+
+```text
+tasks.db
+```
+
+The database file is created automatically when the application starts.
+
+The `tasks` table is also created automatically if it does not already exist.
+
+The table contains:
+
+| Column  | Type                | Description                             |
+| ------- | ------------------- | --------------------------------------- |
+| `id`    | INTEGER PRIMARY KEY | Automatically generated task ID         |
+| `title` | TEXT                | Task title                              |
+| `done`  | BOOLEAN             | Completion status, stored as `0` or `1` |
+
+The application also checks the number of rows in the table during startup. If the table is empty, three example tasks are inserted automatically.
+
+This prevents the example tasks from being duplicated every time the application restarts.
+
+The `tasks.db` file is normally **git-ignored**, so each fresh clone creates its own local database automatically.
 
 ## Installation
 
@@ -27,7 +64,7 @@ cd task-api
 Install the dependencies:
 
 ```bash
-pip install "fastapi[standard]"
+pip install -r requirements.txt
 ```
 
 ## Run
@@ -35,7 +72,7 @@ pip install "fastapi[standard]"
 Start the API with:
 
 ```bash
-uvicorn main:app --reload --port 8000 or fastapi dev main.py
+uvicorn main:app --reload --port 8000
 ```
 
 The API will be available at:
@@ -49,6 +86,8 @@ Swagger documentation:
 ```text
 http://localhost:8000/docs
 ```
+
+On the first startup, `tasks.db` is created automatically and three example tasks are seeded into the database.
 
 ## API Endpoints
 
@@ -66,11 +105,15 @@ http://localhost:8000/docs
 
 Create a new task:
 
+### Linux / Git Bash / WSL
+
 ```bash
 curl -i -X POST http://localhost:8000/tasks -H "Content-Type: application/json" -d '{"title":"Buy milk"}'
 ```
-or if you use command prompt
-```bash
+
+### Windows Command Prompt
+
+```cmd
 curl -i -X POST http://localhost:8000/tasks -H "Content-Type: application/json" -d "{\"title\":\"Buy milk\"}"
 ```
 
@@ -109,7 +152,7 @@ If the title is missing or empty when creating a task, the API returns:
 
 ```json
 {
-  "error": "Title is required and cannot be empty"
+  "error": "Title cannot be empty"
 }
 ```
 
@@ -118,6 +161,26 @@ with HTTP status:
 ```text
 400 Bad Request
 ```
+
+## Database Testing
+
+The SQLite database can be opened using **DB Browser for SQLite**.
+
+Example SQL query executed during database testing:
+
+```sql
+SELECT * FROM tasks WHERE done = 1;
+```
+
+This query returns only the tasks that have been marked as completed.
+
+Changes made directly in DB Browser are immediately reflected by the API because both DB Browser and the FastAPI application read and modify the same `tasks.db` file.
+
+### DB Browser Screenshot
+
+![SQLite database opened in DB Browser]
+
+
 
 ## Swagger Documentation
 
@@ -129,18 +192,7 @@ Open:
 http://localhost:8000/docs
 ```
 
-## Project Structure
-
-```text
-task-api/
-├── main.py
-├── requirements.txt
-├── README.md
-├── swagger.png
-└── .gitignore
-```
-
-## [Swagger API Documentation]
+### Swagger Screenshots
 Command
 <img width="1917" height="968" alt="all-command" src="https://github.com/user-attachments/assets/7471d55d-ab9b-41cf-b979-7a8c5f1e6515" />
 Root
@@ -161,3 +213,26 @@ Get Tasks (after)
 <img width="1917" height="972" alt="get-tasks (after)" src="https://github.com/user-attachments/assets/bd3ac326-ef96-4530-ad87-e498dec823d4" />
 Delete Tasks
 <img width="1917" height="967" alt="delete-tasks" src="https://github.com/user-attachments/assets/2a89ca64-d18c-4748-9cca-937bc78d822c" />
+
+## Project Structure
+
+```text
+task-api/
+├── main.py
+├── requirements.txt
+├── README.md
+├── swagger.png
+├── db-browser.png
+└── .gitignore
+```
+
+## Clean Installation
+
+To verify that the application can be run by a new user:
+
+1. Clone the repository.
+2. Install the dependencies with `pip install -r requirements.txt`.
+3. Run `uvicorn main:app --reload --port 8000`.
+4. Open `http://localhost:8000/tasks`.
+
+The application automatically creates `tasks.db`, creates the `tasks` table, and inserts the three example tasks if the database is empty.
