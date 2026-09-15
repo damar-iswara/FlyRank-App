@@ -154,6 +154,8 @@ Or use a GUI such as DBeaver, pgAdmin, or TablePlus to confirm the seeded rows a
 
 Example screenshot expected in the project documentation:
 
+<img width="338" height="255" alt="Screenshot from 2026-09-16 01-36-08" src="https://github.com/user-attachments/assets/32c17069-16cb-4d9f-9df7-26e8246f9333" />
+
 - `\dt` showing the `tasks` table
 - `SELECT * FROM tasks;` returning seeded rows
 
